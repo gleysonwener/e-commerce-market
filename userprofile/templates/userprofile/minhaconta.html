@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+{% block title %}Minha conta{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Minha conta</h1>
+
+    <a href="{% url 'logout' %}" class="btn btn-danger" >Sair</a>
+   
+</div>
+{% endblock %}

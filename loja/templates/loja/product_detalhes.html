@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+{{ products.title }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <h1>{{ products.title }}</h1>
+    {% if products.image %}
+        <a href="#"><img src="{{ products.image.url }}" alt="" class="img-fluid" style="height: 200px; object-fit: cover;"></a>
+    {% endif %}
+    <p><h4>R$ {{ products.price|floatformat:2 }}</h4></p>
+        {% firstof product.user.get_full_name product.user.username %}
+    {% if products.description %}
+    <p class="mt-4">{{ products.description }}</p>
+    {% endif %}
+    <a href="{% url 'add_to_carrinho' products.id %}" class="btn btn-success">Adcionar ao carrinho</a>    
+</div>
+{% endblock %}

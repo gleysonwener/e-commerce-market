@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+Comprar
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h4>Comprar</h4>
+
+    <h4>Totla a Pagar: R$ {{ carrinho.get_total_custo|floatformat:2 }}</h4>
+        <!-- stripe passo-8 - retirar o formulario e adicionar o evento onclick -->
+        {{ form.as_p }}
+
+        <div id="errors"></div>
+
+        <button class="btn btn-success" onclick="comprar(event)">completar Compra</button>
+
+</div>
+{% endblock %}
+
+<!-- stripe passo-9 -->
+{% block scripts %}
+    <script type="application/javascript" src="https://js.stripe.com/v3/"></script>
+    <script>
+
+        function validate(p_name, s_name, address, zip_numero, city){
+            let errors = [];
+            if(p_name == ''){
+                errors.push('VOCÊ NÃO DIGITOU SEU NOME');
+            }
+
+            if(s_name == ''){
+                errors.push('VOCÊ NÃO DIGITOU SEU SOBRENOME');
+            }
+
+            if(address == ''){
+                errors.push('VOCÊ NÃO DIGITOU SEU ENDEREÇO');
+            }
+
+            if(zip_numero == ''){
+                errors.push('VOCÊ NÃO DIGITOU SEU CEP');
+            }
+
+            if(city == ''){
+                errors.push('VOCÊ NÃO DIGITOU SUA CIDADE');
+            }
+
+            let html = '';
+
+            for (let i = 0; i < errors.length; i++){
+                html += errors[i] + '<br>';
+            }
+
+            let errorsElement = document.getElementById('errors');
+           
+
+            if(errors.length){
+                errorsElement.classList.remove('hidden');
+                errorsElement.innerHTML = html
+                return false;
+            } else{
+                errorsElement.classList.add('hidden');
+                return true;
+            }
+        }
+
+        function comprar(event){
+            event.preventDefault();
+            const p_name = document.getElementById('id_p_name').value;
+            const s_name = document.getElementById('id_s_name').value;
+            const address = document.getElementById('id_address').value;
+            const zip_numero = document.getElementById('id_zip_numero').value;
+            const city = document.getElementById('id_city').value;
+
+            if(validate(p_name, s_name, address, zip_numero, city)) {
+
+
+            let data = {
+                'p_name': p_name,
+                's_name': s_name,
+                'address': address,
+                'zip_numero': zip_numero,
+                'city': city,
+            }
+            let stripe = Stripe('{{ pub_key }}')
+
+            fetch('/cart/checar_comprar/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+
+                    'X-CSRFTOKEN': '{{ csrf_token }}'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            })
+            .then(function(response){
+                return response.json()
+            })
+            
+            .then(function(session){
+                return stripe.redirectToCheckout({ sessionId: session.session.id })
+            })
+
+            .then(function(result){
+                if (result.error) {
+                    alert(result.error.message)
+                }
+            })
+ 
+            .catch(function(error){
+                alert(error)
+            });
+        }
+            return false;
+        }
+    </script>
+{% endblock %}
+
+
+

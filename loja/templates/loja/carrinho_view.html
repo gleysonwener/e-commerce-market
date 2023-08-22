@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+Carrinho
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h5>Carrinho de compras</h5>
+    {% if carrinho|length %}
+        {% for item in carrinho %}
+            <p><b>Títutlo: </b>{{ item.product.title }}</p>
+            <p><b>Quantidade: </b>{{ item.quantity }}</p>
+            <hr>
+            <a href="{% url 'trocar_quantidade' item.product.id %}?action=increase" class="btn btn-danger"> + </a>
+            <a href="{% url 'trocar_quantidade' item.product.id %}?action=decrease" class="btn btn-danger"> - </a>
+            <a href="{% url 'remove_from_carrinho' item.product.id %}" class="btn btn-danger">Deletar produto carrinho</a>
+        {% endfor %}
+        <strong>Total: R$ {{ carrinho.get_total_custo|floatformat:2 }}</strong>
+        <br><br>
+        <a href="{% url 'checar_comprar' %}" class="btn btn-success">Comprar</a>
+    {% else %}
+        <div>
+            <br>
+            <h4>Você não tem produtos nesta lista ainda!</h4>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

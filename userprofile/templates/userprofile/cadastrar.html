@@ -1,0 +1,14 @@
+{% extends 'core/base.html' %}
+{% block title %}Cadastrar usuários{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Cadastros de usuários</h1>
+
+    <form method="POST" action=".">
+        {% csrf_token %}
+        {{ form }}
+        <button class="btn btn-success">Cadastrar</button>
+    </form>
+</div>
+{% endblock %}
